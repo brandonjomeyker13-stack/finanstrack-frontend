@@ -125,6 +125,7 @@ export type Cuenta = {
 export type Colchon = {
   saldo: number;
   aporte_del_ciclo: number;
+  puedes_meter: number;
   movimientos: { id: string; tipo: string; monto: number; fecha: string; motivo: string }[];
 };
 

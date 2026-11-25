@@ -308,7 +308,12 @@ function ColchonVista({ datos, alCambiar }: { datos: Colchon; alCambiar: () => P
         <p className="sub">Este periodo suma {pesos(datos.aporte_del_ciclo)} solo, del porcentaje.</p>
       </section>
       <CampoDinero etiqueta="Meter más, a mano" value={monto} onChange={setMonto} />
-      <Boton onClick={() => void aportar()} disabled={monto <= 0}>
+      <p className="detalle">
+        {datos.puedes_meter > 0
+          ? `Puedes meter hasta ${pesos(datos.puedes_meter)}. Sale de lo que todavía puedes gastar.`
+          : "En este periodo no te queda plata para meter. El porcentaje ya está apartado."}
+      </p>
+      <Boton onClick={() => void aportar()} disabled={monto <= 0 || monto > datos.puedes_meter}>
         Meter al colchón
       </Boton>
       {error && <p className="error">{error}</p>}
