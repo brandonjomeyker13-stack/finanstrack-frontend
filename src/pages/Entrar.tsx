@@ -28,7 +28,7 @@ export function Entrar() {
   }
 
   return (
-    <Screen>
+    <Screen clase="tarjeta">
       <div className="marca">F</div>
       <h1>Hola de nuevo</h1>
       <p className="lead">Entra para ver cuánto te queda de este pago.</p>

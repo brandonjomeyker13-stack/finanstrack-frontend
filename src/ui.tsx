@@ -1,10 +1,19 @@
 import type { MouseEvent, ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { ChartPie, House, ListBullets, Plus } from "@phosphor-icons/react";
 import { miles } from "./format";
 
-export function Screen({ children, conNav = false }: { children: ReactNode; conNav?: boolean }) {
-  return <main className={conNav ? "screen navpad" : "screen"}>{children}</main>;
+export function Screen({
+  children,
+  conNav = false,
+  clase = "",
+}: {
+  children: ReactNode;
+  conNav?: boolean;
+  clase?: string;
+}) {
+  return <main className={["screen", conNav ? "navpad" : "", clase].filter(Boolean).join(" ")}>{children}</main>;
 }
 
 export function Boton({
@@ -74,32 +83,7 @@ export function CampoDinero({
   );
 }
 
-export function Dias({ value, onChange }: { value: number | null; onChange: (dia: number) => void }) {
-  return (
-    <div className="days" role="group" aria-label="Día del mes">
-      {Array.from({ length: 31 }, (_, i) => i + 1).map((dia) => (
-        <button
-          key={dia}
-          type="button"
-          className={dia === value ? "day on" : "day"}
-          onClick={() => onChange(dia)}
-        >
-          {dia}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 const ORDEN = ["/", "/gastar", "/movimientos", "/plan"];
-
-function Icono({ d }: { d: string }) {
-  return (
-    <svg className="nav-ico" viewBox="0 0 24 24" aria-hidden="true">
-      <path d={d} />
-    </svg>
-  );
-}
 
 export function Nav() {
   const { pathname } = useLocation();
@@ -134,7 +118,7 @@ export function Nav() {
     <nav className="nav" aria-label="Principal">
       <p className="nav-marca">Finanstrack</p>
       <NavLink to="/" end className={({ isActive }) => (isActive ? "activo" : "")} onClick={alIr("/")}>
-        <Icono d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" />
+        <House className="nav-ico" size={22} weight="regular" aria-hidden="true" />
         Hoy
       </NavLink>
       <NavLink
@@ -142,7 +126,7 @@ export function Nav() {
         className={({ isActive }) => (isActive ? "gastar activo" : "gastar")}
         onClick={alIr("/gastar")}
       >
-        <Icono d="M12 5v14M5 12h14" />
+        <Plus className="nav-ico" size={22} weight="regular" aria-hidden="true" />
         Gastar
       </NavLink>
       <NavLink
@@ -150,11 +134,11 @@ export function Nav() {
         className={({ isActive }) => (isActive ? "activo" : "")}
         onClick={alIr("/movimientos")}
       >
-        <Icono d="M5 7h14M5 12h14M5 17h9" />
+        <ListBullets className="nav-ico" size={22} weight="regular" aria-hidden="true" />
         Gastos
       </NavLink>
       <NavLink to="/plan" className={({ isActive }) => (isActive ? "activo" : "")} onClick={alIr("/plan")}>
-        <Icono d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h3" />
+        <ChartPie className="nav-ico" size={22} weight="regular" aria-hidden="true" />
         Plan
       </NavLink>
     </nav>

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError, api, type Perfil } from "../api";
 import { useAuth } from "../auth";
-import { Boton, Campo, CampoDinero, Cargando, Dias, Screen } from "../ui";
+import { Calendario } from "../calendario";
+import { Boton, Campo, CampoDinero, Cargando, Screen } from "../ui";
 
 export function Ajustes() {
   const { salir } = useAuth();
@@ -136,21 +137,22 @@ export function Ajustes() {
       <Campo etiqueta="Nombre del pago" value={perfil.nombre_pago} onChange={(v) => poner({ nombre_pago: v })} />
       <CampoDinero etiqueta="Monto fijo" value={perfil.monto_pago} onChange={(v) => poner({ monto_pago: v })} />
       {perfil.frecuencia === "catorcenal" ? (
-        <Campo etiqueta="Un día en que sí te pagaron" type="date" value={ancla} onChange={setAncla} />
+        <Calendario modo="fecha" etiqueta="Un día en que sí te pagaron" value={ancla} onChange={setAncla} />
       ) : (
-        <>
-          <p className="rotulo">Día de pago</p>
-          <Dias value={perfil.dia_de_corte} onChange={(dia) => poner({ dia_de_corte: dia })} />
-        </>
+        <Calendario
+          modo="dia"
+          etiqueta="Día de pago"
+          value={perfil.dia_de_corte}
+          onChange={(dia) => poner({ dia_de_corte: dia })}
+        />
       )}
       {perfil.frecuencia === "quincenal" && (
-        <>
-          <p className="rotulo">Segundo día</p>
-          <Dias
-            value={perfil.segundo_dia_de_corte}
-            onChange={(dia) => poner({ segundo_dia_de_corte: dia })}
-          />
-        </>
+        <Calendario
+          modo="dia"
+          etiqueta="Segundo día"
+          value={perfil.segundo_dia_de_corte}
+          onChange={(dia) => poner({ segundo_dia_de_corte: dia })}
+        />
       )}
 
       <section className="grupo">

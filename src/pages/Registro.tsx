@@ -29,7 +29,7 @@ export function Registro() {
   }
 
   return (
-    <Screen>
+    <Screen clase="tarjeta">
       <div className="marca">F</div>
       <h1>Arma tu plata</h1>
       <p className="lead">Para quien cobra un monto fijo, en una fecha exacta. Sin voz y sin consejos de robot.</p>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ApiError, api, type Colchon, type Cuenta, type Deuda, type Meta } from "../api";
 import { pesos } from "../format";
-import { Boton, Campo, CampoDinero, Cargando, Dias, Screen } from "../ui";
+import { Calendario } from "../calendario";
+import { Boton, Campo, CampoDinero, Cargando, Screen } from "../ui";
 
 type Pestaña = "deudas" | "cuentas" | "colchon" | "metas";
 
@@ -185,11 +186,10 @@ function Deudas({ deudas, alCambiar }: { deudas: Deuda[]; alCambiar: () => Promi
           {tipo === "cuotas" ? (
             <>
               <CampoDinero etiqueta="Cuota de este periodo" value={cuota} onChange={setCuota} />
-              <p className="rotulo">Día de pago</p>
-              <Dias value={dia} onChange={setDia} />
+              <Calendario modo="dia" etiqueta="Día de pago" value={dia} onChange={setDia} />
             </>
           ) : (
-            <Campo etiqueta="¿Para cuándo?" type="date" value={fecha} onChange={setFecha} />
+            <Calendario modo="fecha" etiqueta="¿Para cuándo?" value={fecha} onChange={setFecha} />
           )}
           <Campo etiqueta="Tasa anual, si la sabes" value={tasa} onChange={setTasa} placeholder="28" />
           <Boton onClick={() => void crear()} disabled={!nombre.trim() || total <= 0}>
@@ -274,8 +274,7 @@ function Cuentas({ cuentas, alCambiar }: { cuentas: Cuenta[]; alCambiar: () => P
         <div className="card">
           <Campo etiqueta="Nombre" value={nombre} onChange={setNombre} placeholder="Arriendo" />
           <CampoDinero etiqueta="Monto" value={monto} onChange={setMonto} />
-          <p className="rotulo">Día del mes</p>
-          <Dias value={dia} onChange={setDia} />
+          <Calendario modo="dia" etiqueta="Día del mes" value={dia} onChange={setDia} />
           <Boton onClick={() => void crear()} disabled={!nombre.trim() || monto <= 0}>
             Guardar
           </Boton>

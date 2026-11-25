@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError, api } from "../api";
 import { useAuth } from "../auth";
-import { Boton, Campo, CampoDinero, Dias, Screen } from "../ui";
+import { Calendario } from "../calendario";
+import { Boton, Campo, CampoDinero, Screen } from "../ui";
 
 type Frecuencia = "mensual" | "quincenal" | "catorcenal";
 type Situacion = "lo_espero" | "ya_llego" | "me_queda";
@@ -83,12 +84,18 @@ export function Empezar() {
   }
 
   return (
-    <Screen>
-      <div className="pasos" aria-hidden>
-        {[0, 1, 2].map((n) => (
-          <i key={n} className={n <= paso ? "on" : ""} />
+    <Screen clase="tarjeta">
+      <ol className="pasos">
+        {["Pago", "Hoy", "Colchón"].map((nombre, n) => (
+          <li key={nombre} className={n === paso ? "on" : n < paso ? "hecho" : ""}>
+            <button type="button" disabled={n > paso} onClick={() => n < paso && setPaso(n)}>
+              <span>{n + 1}</span>
+              {nombre}
+            </button>
+          </li>
         ))}
-      </div>
+      </ol>
+      <div key={paso} className="paso-cuerpo">
       {paso === 0 && (
         <>
           <h1>Tu pago, fijo y en fecha</h1>
@@ -117,22 +124,17 @@ export function Empezar() {
           <Campo etiqueta="Cómo le dices a ese pago" value={nombrePago} onChange={setNombrePago} />
           <CampoDinero etiqueta="Cuánto es, exacto" value={monto} onChange={setMonto} />
           {frecuencia === "catorcenal" ? (
-            <Campo etiqueta="Día de tu último pago" type="date" value={ancla} onChange={setAncla} />
+            <Calendario modo="fecha" etiqueta="Día de tu último pago" value={ancla} onChange={setAncla} />
           ) : (
-            <>
-              <p className="rotulo" style={{ marginTop: 16 }}>
-                {frecuencia === "quincenal" ? "Primer día" : "Día en que te pagan"}
-              </p>
-              <Dias value={dia} onChange={setDia} />
-            </>
+            <Calendario
+              modo="dia"
+              etiqueta={frecuencia === "quincenal" ? "Primer día" : "Día en que te pagan"}
+              value={dia}
+              onChange={setDia}
+            />
           )}
           {frecuencia === "quincenal" && (
-            <>
-              <p className="rotulo" style={{ marginTop: 16 }}>
-                Segundo día
-              </p>
-              <Dias value={segundo} onChange={setSegundo} />
-            </>
+            <Calendario modo="dia" etiqueta="Segundo día" value={segundo} onChange={setSegundo} />
           )}
         </>
       )}
@@ -178,6 +180,7 @@ export function Empezar() {
           Atrás
         </Boton>
       )}
+      </div>
     </Screen>
   );
 }
