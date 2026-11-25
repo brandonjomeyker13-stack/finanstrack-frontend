@@ -1,4 +1,4 @@
-import logo from "@/assets/finanstrack_logo.png.asset.json";
+import logo from "@/assets/finanstrack-logo.png";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@/app/router-compat";
 import { ApiError } from "@/app/api";
@@ -31,7 +31,7 @@ export function Registro() {
 
   return (
     <Screen clase="tarjeta">
-      <img className="ft-logo-entrada" src={logo.url} alt="Finanstrack" width={64} height={64} />
+      <img className="ft-logo-entrada" src={logo} alt="Finanstrack" width={64} height={64} />
       <h1>Arma tu plata</h1>
       <p className="lead">Para quien cobra un monto fijo, en una fecha exacta. Sin voz y sin consejos de robot.</p>
       <EntradaGoogle />

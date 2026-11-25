@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Navigate, Route, Routes, useLocation } from "@/app/router-compat";
 import { useAuth } from "./auth";
 import { AnimatePresence, motion } from "framer-motion";
-import logo from "@/assets/finanstrack_logo.png.asset.json";
+import logo from "@/assets/finanstrack-logo.png";
 import { Ajustes } from "./pages/Ajustes";
 import { Empezar } from "./pages/Empezar";
 import { Entrar } from "./pages/Entrar";
@@ -21,7 +21,7 @@ function Puerta({ children }: { children: ReactNode }) {
   if (cargando) {
     return (
       <div className="ft-splash">
-        <img src={logo.url} alt="Finanstrack" width={72} height={72} />
+        <img src={logo} alt="Finanstrack" width={72} height={72} />
       </div>
     );
   }

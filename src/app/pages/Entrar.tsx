@@ -1,4 +1,4 @@
-import logo from "@/assets/finanstrack_logo.png.asset.json";
+import logo from "@/assets/finanstrack-logo.png";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@/app/router-compat";
 import { ApiError } from "@/app/api";
@@ -30,7 +30,7 @@ export function Entrar() {
 
   return (
     <Screen clase="tarjeta">
-      <img className="ft-logo-entrada" src={logo.url} alt="Finanstrack" width={64} height={64} />
+      <img className="ft-logo-entrada" src={logo} alt="Finanstrack" width={64} height={64} />
       <h1>Hola de nuevo</h1>
       <p className="lead">Entra para ver cuánto te queda de este pago.</p>
       <EntradaGoogle />

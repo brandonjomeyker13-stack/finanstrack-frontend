@@ -2,7 +2,7 @@ import type { MouseEvent, ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "@/app/router-compat";
 import { ChartPie, House, ListBullets, Plus } from "@phosphor-icons/react";
 import { miles } from "./format";
-import logo from "@/assets/finanstrack_logo.png.asset.json";
+import logo from "@/assets/finanstrack-logo.png";
 
 export function Screen({
   children,
@@ -97,7 +97,7 @@ export function Nav() {
 
   return (
     <nav className="nav" aria-label="Principal">
-      <p className="nav-marca"><img src={logo.url} alt="" width={30} height={30} />Finanstrack</p>
+      <p className="nav-marca"><img src={logo} alt="" width={30} height={30} />Finanstrack</p>
       <NavLink to="/" end className={({ isActive }) => (isActive ? "activo" : "")} onClick={alIr("/")}>
         <House className="nav-ico" size={22} weight="regular" aria-hidden="true" />
         Hoy
