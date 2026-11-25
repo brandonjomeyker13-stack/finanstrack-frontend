@@ -35,10 +35,12 @@ function Puerta({ children }: { children: ReactNode }) {
   }
   const conMenu = Boolean(usuario?.onboarding_completo);
   return (
-    <>
-      {children}
-      {conMenu && <Nav />}
-    </>
+    <div className="app">
+      <div className={conMenu ? "app-frame con-menu" : "app-frame"}>
+        {conMenu && <Nav />}
+        {children}
+      </div>
+    </div>
   );
 }
 

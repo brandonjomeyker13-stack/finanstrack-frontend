@@ -15,6 +15,7 @@
   --bad-bg: #fde8e6;
   --nav: 76px;
   --radius: 22px;
+  --target-size: 24px;
   color: var(--ink);
   background: var(--bg);
   font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
@@ -25,16 +26,38 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100dvh; background: var(--bg); }
-button, input, select { font: inherit; color: inherit; }
+html { scroll-padding-bottom: calc(var(--nav) + env(safe-area-inset-bottom, 0px)); }
+body {
+  margin: 0;
+  min-block-size: 100dvh;
+  background: var(--bg);
+  overflow-wrap: break-word;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-a { color: inherit; }
+a { color: inherit; overflow-wrap: anywhere; }
+:where(button, select, textarea, input:not([type="checkbox"], [type="radio"]), nav a) {
+  min-block-size: var(--target-size);
+  min-inline-size: var(--target-size);
+}
+:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+@media (pointer: coarse) {
+  :root { --target-size: 44px; }
+}
+@media (min-width: 60rem) {
+  html { scroll-padding-bottom: 1.5rem; }
+}
 
+.app { container: app / inline-size; min-block-size: 100dvh; }
+.app-frame { min-block-size: 100dvh; }
 .screen {
-  width: min(480px, 100%);
-  margin: 0 auto;
+  container: panel / inline-size;
+  width: min(30rem, 100%);
+  margin-inline: auto;
   padding: 22px 18px 28px;
-  min-height: 100dvh;
+  min-block-size: 100dvh;
 }
 .screen.navpad {
   padding-bottom: calc(var(--nav) + 36px + env(safe-area-inset-bottom));
@@ -55,7 +78,7 @@ a { color: inherit; }
 }
 h1 {
   margin: 6px 0 0;
-  font-size: 32px;
+  font-size: clamp(1.75rem, 1rem + 4vw, 2.5rem);
   line-height: 1.05;
   letter-spacing: -0.045em;
   font-weight: 800;
@@ -221,7 +244,7 @@ textarea {
 
 .days {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(var(--target-size), 1fr));
   gap: 6px;
   margin-top: 8px;
 }
@@ -236,19 +259,25 @@ textarea {
 
 .nav {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
+  inset-inline: 0;
   bottom: 0;
-  width: min(480px, 100%);
+  width: min(30rem, 100%);
+  margin-inline: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
-  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  padding: 8px max(10px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px))
+    max(10px, env(safe-area-inset-left, 0px));
   background: rgba(255, 252, 247, 0.94);
   border-top: 1px solid var(--line);
   backdrop-filter: blur(10px);
+  z-index: 2;
 }
+.nav-marca { display: none; margin: 0; }
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   text-align: center;
   font-size: 12px;
@@ -257,7 +286,7 @@ textarea {
   padding: 8px 0 6px;
   border-radius: 14px;
 }
-.nav a.activo { color: white; background: var(--accent); }
+.nav a[aria-current="page"] { color: white; background: var(--accent); }
 
 .item {
   display: flex;
@@ -296,7 +325,7 @@ textarea {
 .slider { accent-color: var(--accent); padding: 0; min-height: 28px; }
 .suma { font-weight: 800; }
 .suma.mal { color: var(--bad); }
-.tabs { display: flex; gap: 6px; margin-top: 16px; overflow-x: auto; }
+.tabs { display: flex; flex-wrap: wrap; flex-wrap: balance; gap: 6px; margin-top: 16px; }
 .tabs button {
   border: 0;
   background: transparent;
@@ -318,4 +347,88 @@ textarea {
   display: grid;
   place-items: center;
   font-weight: 800;
+}
+
+.bolsas,
+.paneles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.bolsas { margin-top: 8px; }
+.bolsas .bolsa,
+.paneles > .card { margin-top: 0; }
+
+/* El panel mide su propio ancho. En poco espacio todo va en una columna. */
+@container panel (inline-size > 36rem) {
+  .bolsas,
+  .paneles { grid-template-columns: 1fr 1fr; }
+  .paneles > .card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .btn { max-inline-size: 22rem; }
+}
+
+@container app (inline-size > 60rem) {
+  .app-frame.con-menu {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    align-items: stretch;
+    min-block-size: 100dvh;
+  }
+  .app-frame.con-menu .nav {
+    position: sticky;
+    inset: auto;
+    top: 0;
+    width: auto;
+    margin: 0;
+    block-size: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 22px 12px;
+    border-top: 0;
+    border-inline-end: 1px solid var(--line);
+    background: var(--card);
+  }
+  .app-frame.con-menu .nav-marca {
+    display: block;
+    padding: 4px 12px 14px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+  .app-frame.con-menu .nav a {
+    justify-content: flex-start;
+    padding-inline: 14px;
+    font-size: 15px;
+  }
+  .app-frame.con-menu .screen {
+    width: min(46rem, 100%);
+    min-block-size: 100dvh;
+    padding-bottom: 2.5rem;
+  }
+  .app-frame.con-menu .screen.navpad {
+    padding-bottom: 2.5rem;
+  }
+}
+
+@supports not (container-type: inline-size) {
+  @media (min-width: 60rem) {
+    .app-frame.con-menu {
+      display: grid;
+      grid-template-columns: 15rem minmax(0, 1fr);
+    }
+    .app-frame.con-menu .nav {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      block-size: 100dvh;
+    }
+    .bolsas,
+    .paneles { grid-template-columns: 1fr 1fr; }
+  }
+}
+
+@media (forced-colors: active) {
+  .nav a[aria-current="page"] { outline: 2px solid CanvasText; }
 }

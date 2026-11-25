@@ -92,7 +92,8 @@ export function Dias({ value, onChange }: { value: number | null; onChange: (dia
 
 export function Nav() {
   return (
-    <nav className="nav">
+    <nav className="nav" aria-label="Principal">
+      <p className="nav-marca">Finanstrack</p>
       <NavLink to="/" end className={({ isActive }) => (isActive ? "activo" : "")}>
         Hoy
       </NavLink>

@@ -141,6 +141,7 @@ export function Inicio() {
       {foto && foto.bolsas.length > 0 && (
         <section className="grupo">
           <h2>Bolsas</h2>
+          <div className="bolsas">
           {foto.bolsas.map((bolsa) => {
             const base = Math.max(bolsa.asignado, bolsa.gastado, 1);
             const ancho = Math.min(100, Math.round((Math.max(bolsa.gastado, 0) / base) * 100));
@@ -159,9 +160,11 @@ export function Inicio() {
               </article>
             );
           })}
+          </div>
         </section>
       )}
 
+      <div className="paneles">
       {foto && (foto.reservas.cuotas > 0 || foto.reservas.cuentas > 0) && (
         <section className="card">
           <h2>Apartado</h2>
@@ -220,6 +223,7 @@ export function Inicio() {
           ))}
         </section>
       )}
+      </div>
 
       <Boton onClick={() => navegar("/gastar")}>Anotar un gasto</Boton>
     </Screen>
