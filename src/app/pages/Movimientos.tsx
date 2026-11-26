@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { ApiError, api, type Gasto, type Ingreso } from "@/app/api";
 import { fechaCorta, pesos, soloDia } from "@/app/format";
+import { IconoBolsa, ResumenMovimiento } from "@/app/dashboard";
 import { Boton, Campo, CampoDinero, Cargando, Screen } from "@/app/ui";
+import { ArrowDownLeft, Trash } from "@phosphor-icons/react";
 
 const NOMBRES: Record<string, string> = {
   obligatorio: "Cuentas",
@@ -73,19 +75,28 @@ export function Movimientos() {
   }
 
   return (
-    <Screen conNav>
+    <Screen conNav clase="ft-movimientos">
       <p className="kicker">Este periodo</p>
-      <h1>Lo que entró y salió</h1>
+      <h1>Movimientos</h1>
+      {gastos && (
+        <ResumenMovimiento
+          ingresado={ingresos.filter((ingreso) => ingreso.estado === "confirmado").reduce((suma, ingreso) => suma + ingreso.monto, 0)}
+          gastado={gastos.reduce((suma, gasto) => suma + gasto.monto, 0)}
+        />
+      )}
       {error && <p className="error">{error}</p>}
       {gastos === null ? (
         <Cargando />
       ) : (
         <>
-          <section className="card">
+          <section className="ft-panel">
             <h2>Ingresos</h2>
             {ingresos.length === 0 && <p className="vacio">Todavía no hay un pago en este periodo.</p>}
             {ingresos.map((ingreso) => (
               <div className="item" key={ingreso.id}>
+                <span className="ft-icono ingreso">
+                  <ArrowDownLeft size={22} aria-hidden="true" />
+                </span>
                 <div>
                   <strong>{ingreso.descripcion}</strong>
                   <p className="detalle">
@@ -120,17 +131,25 @@ export function Movimientos() {
                 </p>
                 {lista.map((gasto) => (
                   <div className="item" key={gasto.id}>
+                    <span className={`ft-icono ft-color-${gasto.categoria}`}>
+                      <IconoBolsa id={gasto.categoria} />
+                    </span>
                     <div>
                       <strong>{gasto.descripcion}</strong>
                       <p className="detalle">
                         {NOMBRES[gasto.categoria] || gasto.categoria}
                         {gasto.explicacion ? ` · ${gasto.explicacion}` : ""}
                       </p>
-                      <button className="linkish" type="button" onClick={() => void borrar(gasto.id)}>
-                        Borrar
-                      </button>
                     </div>
                     <span className="tabular strong">{pesos(gasto.monto)}</span>
+                    <Boton
+                      variante="texto"
+                      clase="ft-icon-button ft-borrar"
+                      titulo={`Borrar ${gasto.descripcion}`}
+                      onClick={() => void borrar(gasto.id)}
+                    >
+                      <Trash size={19} />
+                    </Boton>
                   </div>
                 ))}
               </div>

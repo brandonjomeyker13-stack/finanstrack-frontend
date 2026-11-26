@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@/app/router-compat";
 import { ApiError, api, type Impacto } from "@/app/api";
+import { IconoBolsa } from "@/app/dashboard";
 import { Boton, Campo, CampoDinero, Screen } from "@/app/ui";
+import { Check, Wallet } from "@phosphor-icons/react";
+import { pesos } from "@/app/format";
 
 const BOLSAS = [
   ["variable", "Día a día"],
@@ -78,9 +81,11 @@ export function Gastar() {
   }
 
   return (
-    <Screen conNav>
-      <p className="kicker">Antes de gastar</p>
-      <h1>¿En qué se va?</h1>
+    <Screen conNav clase="ft-gastar">
+      <p className="kicker">Un gasto a la vez</p>
+      <h1>Anotar un gasto</h1>
+      <div className="ft-gasto-layout">
+        <div className="ft-formulario">
       <CampoDinero etiqueta="Monto" value={monto} onChange={setMonto} />
       <Campo etiqueta="Qué fue" value={descripcion} onChange={setDescripcion} placeholder="Almuerzo, bus, mercado" />
       <p className="rotulo" style={{ marginTop: 16 }}>
@@ -88,22 +93,35 @@ export function Gastar() {
       </p>
       <div className="chips">
         {BOLSAS.map(([id, nombre]) => (
-          <button
+          <Boton
             key={id}
             type="button"
-            className={categoria === id ? "chip on" : "chip"}
+            clase={categoria === id ? "chip on" : "chip"}
+            seleccionado={categoria === id}
             onClick={() => setCategoria(id)}
           >
+            <IconoBolsa id={id} size={19} />
             {nombre}
-          </button>
+          </Boton>
         ))}
       </div>
-
-      {impacto && (
-        <div className={seSale ? "aviso malo" : impacto.nivel === "rompe_bolsa" ? "aviso" : "aviso bien"}>
-          <p style={{ margin: 0 }}>{impacto.frase}</p>
         </div>
-      )}
+        <aside className="ft-impacto">
+          <span className="ft-icono ingreso">
+            <Wallet size={26} aria-hidden="true" />
+          </span>
+          <h2>Después de este gasto</h2>
+          {impacto ? (
+            <div className={seSale ? "aviso malo" : impacto.nivel === "rompe_bolsa" ? "aviso" : "aviso bien"}>
+              <p style={{ margin: 0 }}>{impacto.frase}</p>
+            </div>
+          ) : (
+            <p className="detalle">{monto > 0 ? "Calculando el disponible…" : "Disponible por día"}</p>
+          )}
+          <strong className="ft-impacto-numero">{impacto ? pesos(impacto.por_dia_despues) : "—"}</strong>
+          {impacto && <p className="detalle">{pesos(impacto.total_despues)} disponibles en el periodo</p>}
+        </aside>
+      </div>
 
       {seSale && (
         <>
@@ -126,6 +144,7 @@ export function Gastar() {
 
       {error && <p className="error">{error}</p>}
       <Boton onClick={() => void anotar()} disabled={ocupado}>
+        <Check size={20} aria-hidden="true" />
         {ocupado ? "Anotando…" : seSale ? "Anotar igual" : "Anotar"}
       </Boton>
     </Screen>

@@ -3,6 +3,7 @@ import { ApiError, api, type Colchon, type Cuenta, type Deuda, type Meta } from 
 import { pesos } from "@/app/format";
 import { Calendario } from "@/app/calendario";
 import { Boton, Campo, CampoDinero, Cargando, Screen } from "@/app/ui";
+import { Bank, CreditCard, PiggyBank, Target } from "@phosphor-icons/react";
 
 type Pestaña = "deudas" | "cuentas" | "colchon" | "metas";
 
@@ -40,21 +41,28 @@ export function Plan() {
   }, []);
 
   return (
-    <Screen conNav>
+    <Screen conNav clase="ft-plan">
       <p className="kicker">Para que el pago alcance</p>
       <h1>Plan</h1>
       <div className="tabs">
         {(
           [
-            ["deudas", "Deudas"],
-            ["cuentas", "Cuentas"],
-            ["colchon", "Colchón"],
-            ["metas", "Metas"],
+            ["deudas", "Deudas", CreditCard],
+            ["cuentas", "Cuentas", Bank],
+            ["colchon", "Colchón", PiggyBank],
+            ["metas", "Metas", Target],
           ] as const
-        ).map(([id, nombre]) => (
-          <button key={id} type="button" className={pestaña === id ? "on" : ""} onClick={() => setPestaña(id)}>
+        ).map(([id, nombre, Icono]) => (
+          <Boton
+            key={id}
+            type="button"
+            clase={pestaña === id ? "ft-tab on" : "ft-tab"}
+            seleccionado={pestaña === id}
+            onClick={() => setPestaña(id)}
+          >
+            <Icono size={20} aria-hidden="true" />
             {nombre}
-          </button>
+          </Boton>
         ))}
       </div>
       {error && <p className="error">{error}</p>}

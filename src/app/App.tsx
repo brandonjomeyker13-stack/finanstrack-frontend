@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
-import { Navigate, Route, Routes, useLocation } from "@/app/router-compat";
+import { useState, type ReactNode } from "react";
+import { Link, Navigate, Route, Routes, useLocation } from "@/app/router-compat";
 import { useAuth } from "./auth";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { GearSix, SidebarSimple } from "@phosphor-icons/react";
 import logo from "@/assets/finanstrack-logo.png";
 import { Ajustes } from "./pages/Ajustes";
 import { Empezar } from "./pages/Empezar";
@@ -11,11 +12,13 @@ import { Inicio } from "./pages/Inicio";
 import { Movimientos } from "./pages/Movimientos";
 import { Plan } from "./pages/Plan";
 import { Registro } from "./pages/Registro";
-import { Nav } from "./ui";
+import { Boton, Nav } from "./ui";
 
 function Puerta({ children }: { children: ReactNode }) {
   const { usuario, cargando } = useAuth();
   const { pathname } = useLocation();
+  const [compacto, setCompacto] = useState(false);
+  const reducirMovimiento = useReducedMotion();
   const publica = pathname === "/entrar" || pathname === "/registro";
 
   if (cargando) {
@@ -38,20 +41,43 @@ function Puerta({ children }: { children: ReactNode }) {
   const conMenu = Boolean(usuario?.onboarding_completo);
   return (
     <div className="app">
-      <div className={conMenu ? "app-frame con-menu" : "app-frame"}>
+      <div className={conMenu ? `app-frame con-menu${compacto ? " compacto" : ""}` : "app-frame"}>
         {conMenu && <Nav />}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            className="ft-page"
-            initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <div className="ft-contenido">
+          {conMenu && (
+            <header className="ft-cabecera">
+              <div className="ft-cabecera-marca">
+                <Boton
+                  variante="suave"
+                  clase="ft-icon-button ft-menu-toggle"
+                  titulo={compacto ? "Expandir menú" : "Contraer menú"}
+                  onClick={() => setCompacto(!compacto)}
+                >
+                  <SidebarSimple size={22} />
+                </Boton>
+                <img src={logo} alt="" width={30} height={30} />
+                <span>Finanstrack</span>
+              </div>
+              <Link to="/ajustes" className="ft-perfil">
+                <span className="ft-avatar">{usuario?.nombre.slice(0, 1).toUpperCase()}</span>
+                <span className="ft-perfil-nombre">{usuario?.nombre}</span>
+                <GearSix size={20} aria-hidden="true" />
+              </Link>
+            </header>
+          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              className="ft-page"
+              initial={reducirMovimiento ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reducirMovimiento ? 0 : 0.18 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
-import type { MouseEvent, ReactNode } from "react";
-import { NavLink, useLocation, useNavigate } from "@/app/router-compat";
-import { ChartPie, House, ListBullets, Plus } from "@phosphor-icons/react";
+import type { ReactNode } from "react";
+import { NavLink } from "@/app/router-compat";
+import { ChartPie, GearSix, House, ListBullets, Plus } from "@phosphor-icons/react";
 import { miles } from "./format";
 import logo from "@/assets/finanstrack-logo.png";
 
@@ -22,15 +22,29 @@ export function Boton({
   type = "button",
   disabled,
   variante,
+  clase = "",
+  titulo,
+  seleccionado,
 }: {
   children: ReactNode;
   onClick?: () => void;
   type?: "button" | "submit";
   disabled?: boolean;
   variante?: "oscuro" | "suave" | "texto";
+  clase?: string;
+  titulo?: string;
+  seleccionado?: boolean;
 }) {
   return (
-    <button type={type} className={variante ? `btn ${variante}` : "btn"} onClick={onClick} disabled={disabled}>
+    <button
+      type={type}
+      className={["btn", variante, clase].filter(Boolean).join(" ")}
+      title={titulo}
+      aria-label={titulo}
+      aria-pressed={seleccionado}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </button>
   );
@@ -83,45 +97,37 @@ export function CampoDinero({
   );
 }
 
-const ORDEN = ["/", "/gastar", "/movimientos", "/plan"];
-
 export function Nav() {
-  const { pathname } = useLocation();
-  const navegar = useNavigate();
-
-  void pathname;
-  void navegar;
-  function alIr(_destino: string) {
-    return (_e: MouseEvent<HTMLAnchorElement>) => undefined;
-  }
-
   return (
     <nav className="nav" aria-label="Principal">
-      <p className="nav-marca"><img src={logo} alt="" width={30} height={30} />Finanstrack</p>
-      <NavLink to="/" end className={({ isActive }) => (isActive ? "activo" : "")} onClick={alIr("/")}>
+      <p className="nav-marca">
+        <img src={logo} alt="" width={30} height={30} />
+        Finanstrack
+      </p>
+      <span className="ft-nav-label">MI DINERO</span>
+      <NavLink to="/" end className={({ isActive }) => (isActive ? "activo" : "")}>
         <House className="nav-ico" size={22} weight="regular" aria-hidden="true" />
-        Hoy
+        <span>Hoy</span>
       </NavLink>
-      <NavLink
-        to="/gastar"
-        className={({ isActive }) => (isActive ? "gastar activo" : "gastar")}
-        onClick={alIr("/gastar")}
-      >
+      <NavLink to="/gastar" className={({ isActive }) => (isActive ? "gastar activo" : "gastar")}>
         <Plus className="nav-ico" size={22} weight="regular" aria-hidden="true" />
-        Gastar
+        <span>Gastar</span>
       </NavLink>
-      <NavLink
-        to="/movimientos"
-        className={({ isActive }) => (isActive ? "activo" : "")}
-        onClick={alIr("/movimientos")}
-      >
+      <NavLink to="/movimientos" className={({ isActive }) => (isActive ? "activo" : "")}>
         <ListBullets className="nav-ico" size={22} weight="regular" aria-hidden="true" />
-        Gastos
+        <span>Gastos</span>
       </NavLink>
-      <NavLink to="/plan" className={({ isActive }) => (isActive ? "activo" : "")} onClick={alIr("/plan")}>
+      <NavLink to="/plan" className={({ isActive }) => (isActive ? "activo" : "")}>
         <ChartPie className="nav-ico" size={22} weight="regular" aria-hidden="true" />
-        Plan
+        <span>Plan</span>
       </NavLink>
+      <div className="ft-nav-pie">
+        <NavLink to="/ajustes" className={({ isActive }) => (isActive ? "activo" : "")}>
+          <GearSix size={22} className="nav-ico" aria-hidden="true" />
+          <span>Ajustes</span>
+        </NavLink>
+        <p>Un paso a la vez.</p>
+      </div>
     </nav>
   );
 }

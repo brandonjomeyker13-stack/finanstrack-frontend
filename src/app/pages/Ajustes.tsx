@@ -109,13 +109,13 @@ export function Ajustes() {
   }
 
   return (
-    <Screen conNav>
-      <button className="linkish" type="button" onClick={() => navegar("/")}>
-        Volver
-      </button>
+    <Screen conNav clase="ft-ajustes">
       <h1>Ajustes</h1>
       <p className="lead">El pago, el día y cómo se reparte. Las bolsas tienen que sumar 100.</p>
 
+      <div className="ft-ajustes-layout">
+      <section className="ft-panel">
+      <h2>Tu pago</h2>
       <div className="chips">
         {(
           [
@@ -154,8 +154,9 @@ export function Ajustes() {
           onChange={(dia) => poner({ segundo_dia_de_corte: dia })}
         />
       )}
+      </section>
 
-      <section className="grupo">
+      <section className="ft-panel grupo">
         <h2>Reparto</h2>
         {(
           [
@@ -182,6 +183,7 @@ export function Ajustes() {
         ))}
         <p className={suma === 100 ? "suma" : "suma mal"}>Suman {suma}%</p>
       </section>
+      </div>
 
       {error && <p className="error">{error}</p>}
       {ok && <p className="aviso bien">{ok}</p>}
@@ -189,7 +191,7 @@ export function Ajustes() {
         Guardar
       </Boton>
 
-      <section className="card">
+      <section className="ft-panel">
         <h2>Lo que tienes hoy</h2>
         <p className="detalle">
           Si el número no cuadra, dímelo. Reemplaza lo que este periodo traía. No borra los gastos ya anotados.
@@ -204,7 +206,7 @@ export function Ajustes() {
         Cerrar sesión
       </Boton>
 
-      <section className="card">
+      <section className="ft-panel">
         <h2>Tu cuenta</h2>
         <p className="detalle">
           Borrar la cuenta elimina el pago, los gastos, las deudas, el colchón y las metas. No se puede deshacer.

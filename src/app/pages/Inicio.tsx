@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "@/app/router-compat";
-import { ApiError, api, type Informe, type Presupuesto } from "@/app/api";
+import { Link, useNavigate } from "@/app/router-compat";
+import { ArrowRight, CalendarBlank, PiggyBank, Plus } from "@phosphor-icons/react";
+import { ApiError, api, type Bolsa, type Informe, type Presupuesto } from "@/app/api";
 import { fechaCorta, pesos } from "@/app/format";
+import { Distribucion, IconoBolsa, ResumenMovimiento } from "@/app/dashboard";
 import { Boton, Cargando, Screen } from "@/app/ui";
 
 const FRECUENCIA: Record<string, string> = {
@@ -9,6 +11,21 @@ const FRECUENCIA: Record<string, string> = {
   quincenal: "cada quincena",
   catorcenal: "cada 14 días",
 };
+
+function reparto(foto: Presupuesto): Bolsa[] {
+  return [
+    ...foto.bolsas,
+    {
+      id: "colchon",
+      nombre: "Colchón",
+      detalle: "No se gasta. Se guarda para un golpe",
+      porcentaje: foto.colchon.porcentaje,
+      asignado: foto.colchon.aporte_del_ciclo,
+      gastado: 0,
+      disponible: foto.colchon.saldo,
+    },
+  ];
+}
 
 const CUANDO: Record<string, string> = {
   manana: "Mañana",
@@ -70,22 +87,26 @@ export function Inicio() {
   const primer = foto?.nombre.split(" ")[0] || "";
 
   return (
-    <Screen conNav>
+    <Screen conNav clase="ft-inicio">
       <div className="top">
         <div>
-          <p className="kicker">{primer ? `Hola, ${primer}` : "Hoy"}</p>
+          <p className="kicker">Tu dinero, al día</p>
+          <h1>{primer ? `Hola, ${primer}` : "Tu resumen"}</h1>
           {foto && (
             <p className="muted small" style={{ margin: "4px 0 0" }}>
               {fechaCorta(foto.ciclo.inicio)} – {fechaCorta(foto.ciclo.fin)} · {FRECUENCIA[foto.ciclo.frecuencia]}
             </p>
           )}
         </div>
-        <button className="linkish" type="button" onClick={() => navegar("/ajustes")}>
-          Ajustes
-        </button>
+        <Link to="/gastar" className="ft-accion">
+          <Plus size={18} aria-hidden="true" />
+          <span>Anotar gasto</span>
+        </Link>
       </div>
 
       {error && <p className="error">{error}</p>}
+      <div className="ft-resumen-principal">
+      <div>
 
       {informe && informe.recordatorios.length > 0 && (
         <section className="aviso">
@@ -120,8 +141,26 @@ export function Inicio() {
               ? `${pesos(foto.disponible_para_gastar)} para ${foto.ciclo.dias_restantes} días`
               : foto.frase}
           </p>
+          <div className="ft-hero-pie">
+            <span>
+              <CalendarBlank size={17} aria-hidden="true" />
+              {foto.ciclo.dias_restantes} días restantes
+            </span>
+            <Link to="/gastar">
+              Anotar gasto <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+          </div>
         </section>
       )}
+      </div>
+      {foto && foto.bolsas.length > 0 && (
+        <section className="ft-reparto">
+          <h2>Así se reparte tu pago</h2>
+          <Distribucion bolsas={reparto(foto)} />
+        </section>
+      )}
+      </div>
+      {informe && <ResumenMovimiento ingresado={informe.actual.ingresado} gastado={informe.actual.gastado} />}
 
       {foto && foto.frase && !espera && foto.estado !== "en_orden" && (
         <div className={mal ? "aviso malo" : "aviso"}>
@@ -140,17 +179,26 @@ export function Inicio() {
 
       {foto && foto.bolsas.length > 0 && (
         <section className="grupo">
-          <h2>Bolsas</h2>
+          <div className="ft-section-head">
+            <h2>Tus bolsas</h2>
+            <Link to="/ajustes">
+              Ver reparto <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
           <div className="bolsas">
           {foto.bolsas.map((bolsa) => {
             const base = Math.max(bolsa.asignado, bolsa.gastado, 1);
             const ancho = Math.min(100, Math.round((Math.max(bolsa.gastado, 0) / base) * 100));
             return (
-              <article key={bolsa.id} className="bolsa">
+              <article key={bolsa.id} className={`bolsa ft-color-${bolsa.id}`}>
+                <span className="ft-bolsa-icono">
+                  <IconoBolsa id={bolsa.id} />
+                </span>
                 <header>
                   <strong>{bolsa.nombre}</strong>
-                  <span className="tabular">{pesos(bolsa.disponible)}</span>
                 </header>
+                <p className="ft-bolsa-saldo">{pesos(bolsa.disponible)}</p>
+                <p className="ft-bolsa-disponible">Disponible</p>
                 <div className="pista">
                   <span className={bolsa.disponible < 0 ? "llena" : ""} style={{ width: `${ancho}%` }} />
                 </div>
@@ -166,7 +214,7 @@ export function Inicio() {
 
       <div className="paneles">
       {foto && (foto.reservas.cuotas > 0 || foto.reservas.cuentas > 0) && (
-        <section className="card">
+        <section className="ft-panel">
           <h2>Apartado</h2>
           {foto.reservas.cuotas > 0 && (
             <div className="row" style={{ marginTop: 10 }}>
@@ -185,10 +233,13 @@ export function Inicio() {
       )}
 
       {foto && (
-        <section className="card">
+        <section className="ft-panel">
           <div className="row">
             <div>
-              <h2>Colchón</h2>
+              <h2>
+                <PiggyBank size={22} aria-hidden="true" />
+                Colchón
+              </h2>
               <p className="detalle" style={{ marginTop: 4 }}>
                 Este periodo aparta {pesos(foto.colchon.aporte_del_ciclo)}.
               </p>
@@ -199,7 +250,7 @@ export function Inicio() {
       )}
 
       {informe && (
-        <section className="card">
+        <section className="ft-panel">
           <h2>Informe</h2>
           <div className="row" style={{ marginTop: 10 }}>
             <span>Entró</span>
@@ -225,7 +276,10 @@ export function Inicio() {
       )}
       </div>
 
-      <Boton onClick={() => navegar("/gastar")}>Anotar un gasto</Boton>
+      <Boton clase="ft-bottom-action" onClick={() => navegar("/gastar")}>
+        <Plus size={20} aria-hidden="true" />
+        Anotar un gasto
+      </Boton>
     </Screen>
   );
 }
